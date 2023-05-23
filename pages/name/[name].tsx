@@ -7,6 +7,7 @@ import { Button, Card, Container, Grid, Image, Text } from '@nextui-org/react';
 import { localFavorites } from '../../utils';
 
 import confetti from 'canvas-confetti'
+import { Sprites } from '../../interfaces/pokemonDev';
 
 
 
@@ -138,7 +139,7 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
 
     // const path = data<Pokemon>.results.map
 
-    console.log(data)
+    // console.log(data)
 
     return {
         paths: ArrayNames.map(el => ({
@@ -158,9 +159,15 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
     const { data } = await pokeApi.get<Pokemon>(`/pokemon/${name}`);
 
+    const pokemon = {
+        id: data.id,
+        name: data.name,
+        sprites: data.sprites
+    };
+
     return {
         props: {
-            pokemon: data
+            pokemon: pokemon
         }
     }
 };

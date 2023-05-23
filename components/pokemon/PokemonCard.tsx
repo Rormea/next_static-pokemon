@@ -17,7 +17,7 @@ export const PokemonCard: FC<Props> = ({ pokemons }) => {
 
     const handlePress = () => {
 
-        router.push(`/pokemon/${pokemons.id}`)
+        router.push(`/name/${pokemons.name}`)
     };
 
     return (
