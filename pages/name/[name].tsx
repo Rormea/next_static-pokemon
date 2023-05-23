@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { Layout } from '../../components/layouts';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { pokeApi } from '../../api';
-import { Pokemon } from '../../interfaces';
+import { Pokemon, PokemonList } from '../../interfaces';
 import { Button, Card, Container, Grid, Image, Text } from '@nextui-org/react';
 import { localFavorites } from '../../utils';
 
 import confetti from 'canvas-confetti'
+
 
 
 
@@ -15,7 +16,7 @@ interface Props {
 }
 
 
-const PokemonPage: NextPage<Props> = ({ pokemon }) => {
+const PokemonPageName: NextPage<Props> = ({ pokemon }) => {
 
 
     const [isInFavorites, setIsInFavorites] = useState(localFavorites.existingFavorites(pokemon.id));
@@ -122,43 +123,44 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
     )
 };
 
-export default PokemonPage;
+export default PokemonPageName;
 
 
-// You should use getStaticPaths if you’re statically pre-rendering pages that use dynamic routes
-
+////////// Vamos a conseguir los Path es decir el arreglo statico///
+////de todos los pokes que se van a cargar en el Build//////
 
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
 
-    const poke151 = [...Array(151)].map((el, i) => `${i + 1}`)
-    // poke151 = [ '1','2','3','4','5','6','7','8','9', ...'151'];
+    const { data } = await pokeApi.get<PokemonList>('pokemon?limit=151');
+    // El tipo  de la respuesta va ser PokemonList como en el home no Pokemon como en el  getStaticProps
+
+    const ArrayNames: string[] = data.results.map(el => el.name)
+
+    // const path = data<Pokemon>.results.map
+
+    console.log(data)
 
     return {
-        paths: poke151.map(el => ({
-            params: { id: el }
+        paths: ArrayNames.map(el => ({
+            params: { name: el }
         })),
 
         fallback: false
     }
-}
+};
 
-
-
-
+/////////// Ahora con esos paths y esos params vamos a conseguir  que los nombres de esos arreglos ///
+///pasem por Props//////////
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 
-    // console.log(ctx.params)
 
-    const { id } = params as { id: string };
+    const { name } = params as { name: string };
 
-    const { data } = await pokeApi.get<Pokemon>(`/pokemon/${id}`);
-
+    const { data } = await pokeApi.get<Pokemon>(`/pokemon/${name}`);
 
     return {
         props: {
             pokemon: data
         }
     }
-}
-
-
+};
